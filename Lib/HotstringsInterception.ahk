@@ -47,7 +47,7 @@ __KeyEvents(clearTrigger, cond, code, state) {
 		
 		if (state = 0)
 			modifiers.active := StrReplace(modifiers.active, currentModifier, "")
-		else if (state = 1 && !InStr(modifiers.active, currentModifier) && GetKeyState(keyName, "P")) {
+		else if (state = 1 && !InStr(modifiers.active, currentModifier)) {
 			modifiers.active .= currentModifier
 		} 
 	}

@@ -31,7 +31,7 @@ SelectAll_Copy() {
 }
 
 StripQuotes(haystack) {
-    return StrReplace(haystack, chr(34), "") ;RegexReplace(haystack, "(\D)[""|']", "$1")
+    return RegexReplace(haystack, """(.*)""", "$1")
 }
 
 hotReplacer(params) {	
@@ -40,7 +40,7 @@ hotReplacer(params) {
 	template := StrReplace(clipboard, triggerString, "")
 	searchedVar := Trim(StripQuotes(params.1))
 	replacor := Trim(StripQuotes(params.2))
-		
+			
 	newText := StrReplace(template, searchedVar, replacor)
 	
 	Clip(newText)
