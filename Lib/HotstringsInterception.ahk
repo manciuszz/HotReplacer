@@ -40,7 +40,7 @@ __KeyEvents(clearTrigger, cond, code, state) {
 	
 	scanCode := Format("{:x}", code)
 	keyName := GetKeyName("SC" scanCode)
-	
+		
 	currentModifier := modifiers.keys[keyName]
 	if (currentModifier) {
 		modifiers.states[keyName] := state
@@ -50,7 +50,7 @@ __KeyEvents(clearTrigger, cond, code, state) {
 			modifiers.active := StrReplace(modifiers.active, modifiers.lastActive.alias, "")
 		else if (state = 1 && !InStr(modifiers.active, modifiers.lastActive.alias) && GetKeyState(modifiers.lastActive.key, "P")) {
 			modifiers.active .= modifiers.lastActive.alias
-		}
+		} 
 	}
 	
 	if (state = 1 && !currentModifier) {
@@ -58,11 +58,11 @@ __KeyEvents(clearTrigger, cond, code, state) {
 		
 		if ((modifiers.states["LControl"] || modifiers.states["RControl"]) && !InStr(modifiers.shortcuts, S_ThisHotkey))
 			return
-		
+					
 		RemappedKey := modifiers.remap[S_ThisHotkey]
 		if (!RemappedKey)
 			RemappedKey := modifiers.remap[keyName]
-		
+			
 		; This is a random ass bug fix of +0 to +9 remapping ! Apparently accessing the object array via variable for strings +0 to +9 in AHK v1.1.28.00 doesn't work??? in this area and it has to be done directly...
 		if (S_ThisHotkey == "+1")
 			RemappedKey := modifiers.remap["+1"]
@@ -85,7 +85,7 @@ __KeyEvents(clearTrigger, cond, code, state) {
 		else if (S_ThisHotkey == "+0")
 			RemappedKey := modifiers.remap["+0"]
 		
-		if (RemappedKey)
+		if (RemappedKey && (!InStr(keyName, "Numpad") || GetKeyState("NumLock", "T")))
 			S_ThisHotkey := RemappedKey
 		
 		; ToolTip % "Code: " S_ThisHotkey ", State: " state
@@ -95,7 +95,7 @@ __KeyEvents(clearTrigger, cond, code, state) {
 
 Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey := ""){
 	global $
-	static keysBound := false,hotkeyPrefix := "~$", hotstrings := {}, typed := "", keys := {"symbols": "!""#$%&'()*+,-./:;<=>?@[\]^_``{|}~", "num": "0123456789", "alpha":"abcdefghijklmnopqrstuvwxyz", "other": "BS,Return,Tab,Space", "specialKeys":"^a,^c,^v,Left,Right,Up,Down,Home,End,RButton,LButton,LControl,RControl,LAlt,RAlt,AppsKey,Lwin,Rwin,WheelDown,WheelUp,f1,f2,f3,f4,f5,f6,f7,f8,f9,f6,f7,f9,f10,f11,f12", "numpad":"Numpad0,Numpad1,Numpad2,Numpad3,Numpad4,Numpad5,Numpad6,Numpad7,Numpad8,Numpad9,NumpadDot,NumpadDiv,NumpadMult,NumpadAdd,NumpadSub,NumpadEnter" }, effect := {"Return" : "`n", "Tab":A_Tab, "Space": A_Space, "Enter":"`n", "Dot": ".", "Div":"/", "Mult":"*", "Add":"+", "Sub":"-"}
+	static keysBound := false,hotkeyPrefix := "~$", hotstrings := {}, typed := "", keys := {"symbols": "!""#$%&'()*+,-./:;<=>?@[\]^_``{|}~", "num": "0123456789", "alpha":"abcdefghijklmnopqrstuvwxyz", "other": "BS,Return,Tab,Space,Delete", "specialKeys":"^a,^c,^v,Left,Right,Up,Down,Home,End,RButton,LButton,LControl,RControl,LAlt,RAlt,AppsKey,Lwin,Rwin,WheelDown,WheelUp,f1,f2,f3,f4,f5,f6,f7,f8,f9,f6,f7,f9,f10,f11,f12", "numpad":"Numpad0,Numpad1,Numpad2,Numpad3,Numpad4,Numpad5,Numpad6,Numpad7,Numpad8,Numpad9,NumpadDot,NumpadDiv,NumpadMult,NumpadAdd,NumpadSub,NumpadEnter" }, effect := {"Return" : "`n", "Tab":A_Tab, "Space": A_Space, "Enter":"`n", "Dot": ".", "Div":"/", "Mult":"*", "Add":"+", "Sub":"-"}
 	
 	if (!keysBound){
 		AHI := new AutoHotInterception()
@@ -147,14 +147,12 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 		}
 	
 		if (Instr("," . keys.specialKeys . ",", "," . Hotkey . ",")) {
-			if (Hotkey == "^c") {
-				Sleep, 1
-			} else if (Hotkey == "^v") {
-				Sleep, 250
+			if (Hotkey == "^v") {
+				ClipWait, 0.5
 				if (StrLen(Clipboard) <= 256) {
 					typed .= Clipboard
 				}
-			} else if (Hotkey == "Left" || Hotkey == "Right") {
+			} else if (Hotkey == "^c" || Hotkey == "Left" || Hotkey == "Right") {
 				Sleep, 1
 			} else {
 				typed := ""
@@ -167,15 +165,17 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 			; trim typed var if Backspace was pressed.
 			StringTrimRight,typed,typed,1
 			return
-		} else if (RegExMatch(Hotkey, "Numpad(.+?)", numKey)) {
-			if (numkey1 ~= "\d"){
-				typed .= numkey1
+		} else if (RegExMatch(Hotkey, "Numpad(.*)", numKey)) {
+			if (numKey1 ~= "\d"){
+				typed .= numKey1
 			} else {
 				typed .= effect[numKey1]
 			}
 		} else {
 			typed .= Hotkey
 		}
+		
+		; ToolTip, % typed
 		
 		matched := false
 		for k,v in hotstrings
@@ -189,7 +189,7 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 					matchRegex := "O)" . matchRegex
 				}
 			}
-			; ToolTip, % typed
+			
 			if (RegExMatch(typed, matchRegex, local$)){
 				matched := true
 				if (v.cond != "" && IsFunc(v.cond)){
