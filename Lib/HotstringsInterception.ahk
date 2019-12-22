@@ -58,33 +58,11 @@ __KeyEvents(clearTrigger, cond, code, state) {
 		
 		if ((modifiers.states["LControl"] || modifiers.states["RControl"]) && !InStr(modifiers.shortcuts, S_ThisHotkey))
 			return
-					
-		RemappedKey := modifiers.remap[S_ThisHotkey]
+		
+		RemappedKey := modifiers.remap["" . S_ThisHotkey]
 		if (!RemappedKey)
 			RemappedKey := modifiers.remap[keyName]
 			
-		; This is a random ass bug fix of +0 to +9 remapping ! Apparently accessing the object array via variable for strings +0 to +9 in AHK v1.1.28.00 doesn't work??? in this area and it has to be done directly...
-		if (S_ThisHotkey == "+1")
-			RemappedKey := modifiers.remap["+1"]
-		else if (S_ThisHotkey == "+2")
-			RemappedKey := modifiers.remap["+2"]
-		else if (S_ThisHotkey == "+3")
-			RemappedKey := modifiers.remap["+3"]
-		else if (S_ThisHotkey == "+4")
-			RemappedKey := modifiers.remap["+4"]	
-		else if (S_ThisHotkey == "+5")
-			RemappedKey := modifiers.remap["+5"]	
-		else if (S_ThisHotkey == "+6")
-			RemappedKey := modifiers.remap["+6"]	
-		else if (S_ThisHotkey == "+7")
-			RemappedKey := modifiers.remap["+7"]	
-		else if (S_ThisHotkey == "+8")
-			RemappedKey := modifiers.remap["+8"]
-		else if (S_ThisHotkey == "+9")
-			RemappedKey := modifiers.remap["+9"]
-		else if (S_ThisHotkey == "+0")
-			RemappedKey := modifiers.remap["+0"]
-		
 		if (RemappedKey && (!InStr(keyName, "Numpad") || GetKeyState("NumLock", "T")))
 			S_ThisHotkey := RemappedKey
 		

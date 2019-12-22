@@ -38,7 +38,6 @@ hotReplacer(params) {
 	SelectAll_Copy()
 
 	template := StrReplace(clipboard, triggerString, "")
-	
 	searchedVar := Trim(StripQuotes(params.1))
 	replacor := Trim(StripQuotes(params.2))
 		
