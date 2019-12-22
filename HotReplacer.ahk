@@ -23,7 +23,7 @@ SetBatchLines,-1
 #Include <Clip>
 #Include <HotstringsInterception>
 
-Hotstring("s)~replace\(("".*""),(?:\s+)?("".*"")\)", "hotReplacer", 3)
+Hotstring("s)~replace\(([""|'].*[""|']),(?:\s+)?([""|'].*[""|'])\)", "hotReplacer", 3)
 
 SelectAll_Copy() {
 	Send, {ctrl down}a{ctrl up}
@@ -31,7 +31,7 @@ SelectAll_Copy() {
 }
 
 StripQuotes(haystack) {
-    return RegexReplace(haystack, """(.*)""", "$1")
+    return RegexReplace(haystack, "[""|'](.*)[""|']", "$1")
 }
 
 hotReplacer(params) {	
