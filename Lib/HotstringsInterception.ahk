@@ -59,7 +59,7 @@ __KeyEvents(clearTrigger, cond, code, state) {
 			return
 		
 		RemappedKey := modifiers.remap["" . S_ThisHotkey]
-		if (!RemappedKey)
+		if (!RemappedKey) ; for cases like "+Enter" and etc.
 			RemappedKey := modifiers.remap[keyName]
 			
 		if (RemappedKey && (!InStr(keyName, "Numpad") || GetKeyState("NumLock", "T")))
