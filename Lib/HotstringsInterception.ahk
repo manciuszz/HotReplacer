@@ -33,7 +33,7 @@ Hotstring(
 
 __KeyEvents(clearTrigger, cond, code, state) { 
 	global Mappings 
-	static modifiers := { lastActive: {}, active: "", keys: { "LShift": "+", "RShift": "+", "LControl": "^", "RControl": "^", "CapsLock": "+" }, states: {}, remap: "", shortcuts: "^a,^c,^v" }
+	static modifiers := { active: "", keys: { "LShift": "+", "RShift": "+", "LControl": "^", "RControl": "^", "CapsLock": "+" }, states: {}, remap: "", shortcuts: "^a,^c,^v" }
 		
 	if (!modifiers.remap)
 		modifiers.remap := Mappings
@@ -44,12 +44,11 @@ __KeyEvents(clearTrigger, cond, code, state) {
 	currentModifier := modifiers.keys[keyName]
 	if (currentModifier) {
 		modifiers.states[keyName] := state
-		modifiers.lastActive := { key: keyName, alias: currentModifier }
 		
 		if (state = 0)
-			modifiers.active := StrReplace(modifiers.active, modifiers.lastActive.alias, "")
-		else if (state = 1 && !InStr(modifiers.active, modifiers.lastActive.alias) && GetKeyState(modifiers.lastActive.key, "P")) {
-			modifiers.active .= modifiers.lastActive.alias
+			modifiers.active := StrReplace(modifiers.active, currentModifier, "")
+		else if (state = 1 && !InStr(modifiers.active, currentModifier) && GetKeyState(keyName, "P")) {
+			modifiers.active .= currentModifier
 		} 
 	}
 	
@@ -126,7 +125,7 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 	
 		if (Instr("," . keys.specialKeys . ",", "," . Hotkey . ",")) {
 			if (Hotkey == "^v") {
-				ClipWait, 0.5
+				Sleep, 500
 				if (StrLen(Clipboard) <= 256) {
 					typed .= Clipboard
 				}
