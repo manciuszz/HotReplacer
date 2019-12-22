@@ -1,6 +1,10 @@
 # HotReplacer
  A script which allows to execute custom functions (i.e. replacing words on the fly) on any input fields (i.e web browser address bar, notepad, chat boxes etc..).
 
+# Preview
+
+![Preview](https://giant.gfycat.com/EdibleEnlightenedHound.gif)
+
 # Usage
 
 At the moment, there is currently only one text function (as I'd like to call it) implemented - to replace text inside your clipboard ***~replace(str1, str2)***.
@@ -23,7 +27,3 @@ It uses enhanced [AHK Hotstrings](https://github.com/menixator/hotstring) to all
 
 # Why not just use built-in editor replacer feature?
 Recently, I needed to edit a file where I had this template where one or two places needed to be changed, so I kinda wished I had the ABILITY TO TYPE the action, such as replace this and that without playing with the editors interface whatsoever. I felt that doing something like empowering simple text with the ability to execute functions would allow to do some cool stuff, besides making me a lot faster and more productive.
-
-# Preview
-
-![Preview](https://giant.gfycat.com/EdibleEnlightenedHound.gif)
