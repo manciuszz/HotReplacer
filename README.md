@@ -23,3 +23,7 @@ It uses enhanced [AHK Hotstrings](https://github.com/menixator/hotstring) to all
 
 # Why not just use built-in editor replacer feature?
 Recently, I needed to edit a file where I had this template where one or two places needed to be changed, so I kinda wished I had the ABILITY TO TYPE the action, such as replace this and that without playing with the editors interface whatsoever. I felt that doing something like empowering simple text with the ability to execute functions would allow to do some cool stuff, besides making me a lot faster and more productive.
+
+# Preview
+
+![Preview](https://giant.gfycat.com/EdibleEnlightenedHound.gif)
