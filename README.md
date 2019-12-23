@@ -36,7 +36,7 @@ Lorem ipsum dolor sit YOLO, consectetur adipiscing elit. Maecenas sed risus pret
 Notice that in order to use REGEX you have to encase your query in back-tic's like so ``` `my regex syntax` ```
 
 ### Loop text function example:
-```js
+```hcl
 $port = `8080`
 $type = `tcp`
 $my_ips = `[0.0.0.0/0, 1.0.0.1/0]`
@@ -46,7 +46,7 @@ $template = `### tuple ### allow $type $port 0.0.0.0/0 any $my_ips
 ~loop(2, $template)
 ```
 would result in
-```js
+```hcl
 ### tuple ### allow tcp 8080 0.0.0.0/0 any 0.0.0.0/0
 -A ufw-user-input -p tcp --dport 8080 -j ACCEPT
 ### tuple ### allow tcp 8080 0.0.0.0/0 any 1.0.0.1/0

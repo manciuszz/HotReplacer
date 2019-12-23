@@ -152,7 +152,8 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 			typed .= Hotkey
 		}
 		
-		; ToolTip, % typed
+		if (debugTypingDetection)
+			ToolTip, % typed
 		
 		matched := false
 		for k, v in hotstrings

@@ -31,5 +31,6 @@
 	"NumpadPgUp": "Numpad9"
 	"Enter": "Return"
 	"Backspace": "BS" 
+	"+Space": A_Space
 )}
 

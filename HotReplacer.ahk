@@ -15,14 +15,13 @@ SetWinDelay,-1
 SendMode, Input
 SetBatchLines,-1
 
-; if not A_IsAdmin {
-   ; Run *RunAs "%A_ScriptFullPath%"
-   ; ExitApp
-; }
-
 #Include <Clip>
 #Include <Debugging/JSON>
 #Include <HotstringsInterception>
+
+; global debugTypingDetection := true ; uncomment to see what is being stored inside the typing buffer...
+
+; Utilities.Run_AsAdmin()
 
 Hotstring("s)~loop\((\d+),(?:\s+)?(.*)\)", "TextFunctions.textLoop", 3)
 Hotstring("s)~replace\(([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])\)", "TextFunctions.hotReplacer", 3)
@@ -35,6 +34,13 @@ class Utilities {
 
 	StripQuotes(haystack) {
 		return RegexReplace(haystack, "[""|'|``](.*)[""|'|``]", "$1")
+	}
+	
+	Run_AsAdmin() {
+		if not A_IsAdmin {
+		   Run *RunAs "%A_ScriptFullPath%"
+		   ExitApp
+		}
 	}
 }
 
@@ -76,7 +82,6 @@ class TextFunctions {
 		templateVar := params.2
 
 		templateLength := MatchedData.vars[templateVar].Length()
-
 		if (loopCount > templateLength)
 			loopCount := templateLength
 
@@ -87,7 +92,7 @@ class TextFunctions {
 		Clip(newText)
 	}
 
-	hotReplacer(params) {	
+	hotReplacer(params) {
 		Utilities.SelectAll_Copy()
 
 		template := clipboard
