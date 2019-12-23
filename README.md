@@ -24,6 +24,17 @@ Lorem ipsum dolor sit YOLO, consectetur adipiscing elit. Maecenas sed risus pret
 
 The key here is typing **~replace(*"string_to_search_for"*, *"will_be_replaced_with_this"*)** on the fly.
 
+*This function also accepts REGEX:*
+```js
+Lorem ipsum dolor sit am t, consectetur adipiscing elit. Maecenas sed risus pretium, feugiat nulla sit am t.
+~replace(`am\st`, "YOLO")
+```
+would result in
+```js
+Lorem ipsum dolor sit YOLO, consectetur adipiscing elit. Maecenas sed risus pretium, feugiat nulla sit YOLO.
+```
+Notice that in order to use REGEX you have to encase your query in back-tic's like so `my regex syntax`
+
 ### Loop text function example:
 ```js
 $port = `8080`

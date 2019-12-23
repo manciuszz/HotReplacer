@@ -54,7 +54,6 @@ __KeyEvents(clearTrigger, cond, code, state) {
 	
 	if (state = 1 && !currentModifier) {
 		S_ThisHotkey := (!currentModifier ? modifiers.active : "") . keyName
-		
 		if ((modifiers.states["LControl"] || modifiers.states["RControl"]) && !InStr(modifiers.shortcuts, S_ThisHotkey))
 			return
 		

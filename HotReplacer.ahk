@@ -25,7 +25,7 @@ SetBatchLines,-1
 #Include <HotstringsInterception>
 
 Hotstring("s)~loop\((\d+),(?:\s+)?(.*)\)", "TextFunctions.textLoop", 3)
-Hotstring("s)~replace\(([""|'].*[""|']),(?:\s+)?([""|'].*[""|'])\)", "TextFunctions.hotReplacer", 3)
+Hotstring("s)~replace\(([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])\)", "TextFunctions.hotReplacer", 3)
 
 class Utilities {
 	SelectAll_Copy() {
@@ -34,7 +34,7 @@ class Utilities {
 	}
 
 	StripQuotes(haystack) {
-		return RegexReplace(haystack, "[""|'](.*)[""|']", "$1")
+		return RegexReplace(haystack, "[""|'|``](.*)[""|'|``]", "$1")
 	}
 }
 
@@ -94,7 +94,10 @@ class TextFunctions {
 		searchedVar := Trim(Utilities.StripQuotes(params.1))
 		replacor := Trim(Utilities.StripQuotes(params.2))
 				
-		newText := StrReplace(template, searchedVar, replacor)
+		if (InStr(params.1, "``"))
+			newText := RegExReplace(template, searchedVar, replacor)
+		else
+			newText := StrReplace(template, searchedVar, replacor)
 		
 		Clip(newText)
 	}
