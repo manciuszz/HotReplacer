@@ -4,13 +4,15 @@ A proof of concept script which allows to execute custom functions (i.e. replaci
 
 # Preview
 
-![Preview](https://giant.gfycat.com/EdibleEnlightenedHound.gif)
+![Preview](https://giant.gfycat.com/VainAbandonedHornshark.gif)
 
 # Usage
 
-At the moment, there is currently only one text function (as I'd like to call it) implemented - to replace text inside your clipboard ***~replace("str1", "str2")***.
+At the moment, there is currently only two text functions (as I'd like to call it) implemented:
+- to loop a template N times ***~loop(N, $variableName)***.
+- to replace text inside your clipboard ***~replace("str1", "str2")***.
 
-For example:
+### Replace text function example:
 ```js
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed risus pretium, feugiat nulla sit amet.
 ~replace("amet", "YOLO")
@@ -21,6 +23,24 @@ Lorem ipsum dolor sit YOLO, consectetur adipiscing elit. Maecenas sed risus pret
 ```
 
 The key here is typing **~replace(*"string_to_search_for"*, *"will_be_replaced_with_this"*)** on the fly.
+
+### Loop text function example:
+```js
+$port = `8080`
+$type = `tcp`
+$my_ips = `[0.0.0.0/0, 1.0.0.1/0]`
+$template = `### tuple ### allow $type $port 0.0.0.0/0 any $my_ips
+-A ufw-user-input -p $type --dport $port -j ACCEPT`
+
+~loop(2, $template)
+```
+would result in
+```js
+### tuple ### allow tcp 8080 0.0.0.0/0 any 0.0.0.0/0
+-A ufw-user-input -p tcp --dport 8080 -j ACCEPT
+### tuple ### allow tcp 8080 0.0.0.0/0 any 1.0.0.1/0
+-A ufw-user-input -p tcp --dport 8080 -j ACCEPT
+```
 
 Note: It should work with multi-line strings too!
 
@@ -34,5 +54,4 @@ Recently, I needed to edit a file where I had this template where one or two pla
 
 # TODO / Future IDEAS
 
-- Loop actions
 - On the fly text translation function

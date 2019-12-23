@@ -76,7 +76,7 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 	
 	if (!keysBound){
 		AHI := new AutoHotInterception()
-		KeyboardId := AHI.GetDeviceList().1.Handle
+		KeyboardId := AHI.GetDeviceList().1.Handle ; TODO: Find a better way to detect keyboardId...
 		AHI.SubscribeKeyboard(AHI.GetKeyboardIdFromHandle(KeyboardId), false, Func("__KeyEvents").Bind(clearTrigger, cond))
 		
 		/* ; Apparently 'Hotkey' doesn't work in some applications like Opera browser..
@@ -109,8 +109,8 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 		; Hotkey := SubStr(A_ThisHotkey,3)
 		; Tooltip, % Hotkey
 
-		if (StrLen(Hotkey) == 2 && Substr(Hotkey,1,1) == "+" && Instr(keys.alpha, Substr(Hotkey, 2,1))){
-			Hotkey := Substr(Hotkey,2)
+		if (StrLen(Hotkey) == 2 && Substr(Hotkey, 1, 1) == "+" && Instr(keys.alpha, Substr(Hotkey, 2, 1))){
+			Hotkey := Substr(Hotkey, 2)
 			if (!GetKeyState("Capslock", "T")){
 				StringUpper, Hotkey,Hotkey
 			}
@@ -118,7 +118,8 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 		
 		shiftState := GetKeyState("Shift", "P")
 		uppercase :=  GetKeyState("Capslock", "T") ? !shiftState : shiftState 
-		;If capslock is down, shift's function is reversed.(ie pressing shift and a key while capslock is on will provide the lowercase key)
+		
+		;if capslock is down, shift's function is reversed.(ie pressing shift and a key while capslock is on will provide the lowercase key)
 		if (uppercase && Instr(keys.alpha, Hotkey)){
 			StringUpper, Hotkey,Hotkey
 		}
@@ -126,7 +127,7 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 		if (Instr("," . keys.specialKeys . ",", "," . Hotkey . ",")) {
 			if (Hotkey == "^v") {
 				Sleep, 500
-				if (StrLen(Clipboard) <= 256) {
+				if (StrLen(Clipboard) <= 256) { ; We don't want to flood the buffer with large chunks of text, when its used to only detect typed commands...
 					typed .= Clipboard
 				}
 			} else if (Hotkey == "^c" || Hotkey == "Left" || Hotkey == "Right") {
@@ -140,7 +141,7 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 			typed .= effect[ Hotkey ]
 		} else if (Hotkey == "BS"){
 			; trim typed var if Backspace was pressed.
-			StringTrimRight,typed,typed,1
+			StringTrimRight, typed, typed, 1
 			return
 		} else if (RegExMatch(Hotkey, "Numpad(.*)", numKey)) {
 			if (numKey1 ~= "\d"){
@@ -155,7 +156,7 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 		; ToolTip, % typed
 		
 		matched := false
-		for k,v in hotstrings
+		for k, v in hotstrings
 		{
 			matchRegex := (v.mode == 1 ? "Oi)" : "")  . (v.mode == 3 ? RegExReplace(v.trigger, "\$$", "") : "\Q" . v.trigger . "\E") . "$"
 			
@@ -170,22 +171,22 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 			if (RegExMatch(typed, matchRegex, local$)){
 				matched := true
 				if (v.cond != "" && IsFunc(v.cond)){
-					; If hotstring has a condition function.
+					; if hotstring has a condition function.
 					A_LoopCond := Func(v.cond)
 					if (A_LoopCond.MinParams >= 1){
-						; If the function has atleast 1 parameters.
+						; if the function has atleast 1 parameters.
 						A_LoopRetVal := A_LoopCond.(v.mode == 3 ? local$ : local$.Value(0))
 					} else {
 						A_LoopRetVal := A_LoopCond.()
 					}
 					if (!A_LoopRetVal){
-						; If the function returns a non-true value.
+						; if the function returns a non-true value.
 						matched := false
 						continue
 					}
 				}
 				if (v.clearTrigger){
-					;Delete the trigger
+					; Delete the trigger
 					SendInput % "{BS " . StrLen(local$.Value(0))  . "}"
 				}
 				if (IsLabel(v.label)){
@@ -193,18 +194,21 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 					gosub, % v.label
 				} else if (IsFunc(v.label)){
 					callbackFunc := Func(v.label)
-					if (callbackFunc.MinParams >= 1){
-						callbackFunc.(v.mode == 3 ? local$ : local$.Value(0))
+					if (callbackFunc.MinParams >= 1) {
+						if (InStr(v.label, ".")) ; TODO: Add 'context' instead of '_' if necessary.
+							callbackFunc.(_, v.mode == 3 ? local$ : local$.Value(0))
+						else
+							callbackFunc.(v.mode == 3 ? local$ : local$.Value(0))
 					} else {
 						callbackFunc.()
 					}
 				} else {
 					toSend := v.label
 				
-					;Working out the backreferences
+					; Working out the backreferences
 					Loop, % local$.Count()
-						StringReplace, toSend,toSend,% "$" . A_Index,% local$.Value(A_index),All
-					toSend := RegExReplace(toSend,"([!#\+\^\{\}])","{$1}") ;Escape modifiers
+						StringReplace, toSend, toSend, % "$" . A_Index, % local$.Value(A_Index), All
+					toSend := RegExReplace(toSend, "([!#\+\^\{\}])", "{$1}") ; Escape modifiers
 					SendInput,%toSend%
 				}
 				
