@@ -106,7 +106,6 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 
 		Hotkey := S_ThisHotkey
 		; Hotkey := SubStr(A_ThisHotkey,3)
-		; Tooltip, % Hotkey
 
 		if (StrLen(Hotkey) == 2 && Substr(Hotkey, 1, 1) == "+" && Instr(keys.alpha, Substr(Hotkey, 2, 1))){
 			Hotkey := Substr(Hotkey, 2)
@@ -153,7 +152,7 @@ Hotstring(trigger, label, mode := 1, clearTrigger := 1, cond := "", S_ThisHotkey
 		}
 		
 		if (debugTypingDetection)
-			ToolTip, % typed
+			ToolTip, % Hotkey . " | " . typed
 		
 		matched := false
 		for k, v in hotstrings

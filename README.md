@@ -8,9 +8,10 @@ A proof of concept script which allows to execute custom functions (i.e. replaci
 
 # Usage
 
-At the moment, there is currently only two text functions (as I'd like to call it) implemented:
+At the moment, there are currently only three text functions (as I'd like to call it) implemented:
 - to loop a template N times ***~loop(N, $variableName)***.
 - to replace text inside your clipboard ***~replace("str1", "str2")***.
+- to translate input text via Google Translate ***~translate("input text", "from_language", "to_language")***.
 
 ### Replace text function example:
 ```js
@@ -53,6 +54,12 @@ would result in
 -A ufw-user-input -p tcp --dport 8080 -j ACCEPT
 ```
 
+### Translate text function example:
+```hcl
+~translate("Hello world", "auto", "fr") ; would result in "Bonjour le monde"
+~translate("Hello world", "fr") ; same as above, second parameter is default "auto" and would result in "Bonjour le monde"
+```
+
 Note: It should work with multi-line strings too!
 
 # How it works
@@ -65,4 +72,5 @@ Recently, I needed to edit a file where I had this template where one or two pla
 
 # TODO / Future IDEAS
 
-- On the fly text translation function
+- Optimize REGEX queries...
+- Implement variable recognition to translate text function

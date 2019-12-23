@@ -16,20 +16,26 @@ SendMode, Input
 SetBatchLines,-1
 
 #Include <Clip>
-#Include <Debugging/JSON>
+#Include <Translate>
+; #Include <Debugging/JSON>
 #Include <HotstringsInterception>
-
-; global debugTypingDetection := true ; uncomment to see what is being stored inside the typing buffer...
 
 ; Utilities.Run_AsAdmin()
 
-Hotstring("s)~loop\((\d+),(?:\s+)?(.*)\)", "TextFunctions.textLoop", 3)
-Hotstring("s)~replace\(([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])\)", "TextFunctions.hotReplacer", 3)
+; global debugTypingDetection := true ; uncomment to see what is being stored inside the typing buffer...
+
+Hotstring("s)~loop\((\d+),(?:\s+)?(.*)\)", "TextFunctions.textLoop", 3) ; ~loop(number, $variable)
+Hotstring("s)~replace\(([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])\)", "TextFunctions.hotReplacer", 3) ; ~replace("str1", "str2") or ~replace('str1', 'str2') or ~replace(`str1`, `str2`)
+Hotstring("s)~translate\((?(?=.*,.*,.*)([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])|(?=.*,.*)([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``]))\)", "TextFunctions.translateText", 3)
 
 class Utilities {
 	SelectAll_Copy() {
 		Send, {ctrl down}a{ctrl up}
 		Clip()
+	}
+	
+	Paste(text) {
+		Clip(text)
 	}
 
 	StripQuotes(haystack) {
@@ -45,6 +51,23 @@ class Utilities {
 }
 
 class TextFunctions {
+	translateText(params) {
+		textToTranslate := params.1
+		fromLanguage := params.2
+		toLanguage := params.3
+	
+		if (params.4 && params.5) {
+			textToTranslate := params.4
+			fromLanguage := "auto"
+			toLanguage := params.5
+		}
+		
+		translationRequestData := GoogleTranslate(Utilities.StripQuotes(textToTranslate), Utilities.StripQuotes(fromLanguage), Utilities.StripQuotes(toLanguage))
+				
+		if (translationRequestData.2 == "Success")
+			Utilities.Paste(translationRequestData.1)
+	}
+
 	textLoop(params) {
 		Utilities.SelectAll_Copy()
 		
@@ -89,7 +112,7 @@ class TextFunctions {
 			newText .= MatchedData.vars[templateVar, A_Index] . "`n"
 		}
 		
-		Clip(newText)
+		Utilities.Paste(newText)
 	}
 
 	hotReplacer(params) {
@@ -104,7 +127,7 @@ class TextFunctions {
 		else
 			newText := StrReplace(template, searchedVar, replacor)
 		
-		Clip(newText)
+		Utilities.Paste(newText)
 	}
 }
 
