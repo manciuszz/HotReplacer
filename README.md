@@ -33,7 +33,7 @@ would result in
 ```js
 Lorem ipsum dolor sit YOLO, consectetur adipiscing elit. Maecenas sed risus pretium, feugiat nulla sit YOLO.
 ```
-Notice that in order to use REGEX you have to encase your query in back-tic's like so `my regex syntax`
+Notice that in order to use REGEX you have to encase your query in back-tic's like so ``` `my regex syntax` ```
 
 ### Loop text function example:
 ```js
