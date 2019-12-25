@@ -28,10 +28,10 @@ SetBatchLines,-1
 Hotstring("s)~loop\((\d+),(?:\s+)?(.*)\)", "TextFunctions.textLoop", 3) 
 
 ; ~replace("str1", "str2") or ~replace('str1', 'str2') or ~replace(`str1`, `str2`)
-Hotstring("s)~replace\(([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])\)", "TextFunctions.hotReplacer", 3)
+Hotstring("sSU)~replace\(([""|'|``].*[""|'|``]),(?:\s+)?((?1))\)", "TextFunctions.hotReplacer", 3)
 
 ; ~translate("str1", "str2", "str3")
-Hotstring("s)~translate\((?(?=.*,.*,.*)([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])|(?=.*,.*)([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``]))\)", "TextFunctions.translateText", 3) 
+Hotstring("sSU)~translate\((?(?=.*,.*,.*)([""|'|``].*[""|'|``]),(?:\s+)?((?1)),(?:\s+)?((?1))|(?=.*,.*)((?1)),(?:\s+)?((?1)))\)", "TextFunctions.translateText", 3) 
 
 class Utilities {
 	SelectAll_Copy() {
