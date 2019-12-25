@@ -24,9 +24,14 @@ SetBatchLines,-1
 
 ; global debugTypingDetection := true ; uncomment to see what is being stored inside the typing buffer...
 
-Hotstring("s)~loop\((\d+),(?:\s+)?(.*)\)", "TextFunctions.textLoop", 3) ; ~loop(number, $variable)
-Hotstring("s)~replace\(([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])\)", "TextFunctions.hotReplacer", 3) ; ~replace("str1", "str2") or ~replace('str1', 'str2') or ~replace(`str1`, `str2`)
-Hotstring("s)~translate\((?(?=.*,.*,.*)([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])|(?=.*,.*)([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``]))\)", "TextFunctions.translateText", 3)
+; ~loop(number, $variable)
+Hotstring("s)~loop\((\d+),(?:\s+)?(.*)\)", "TextFunctions.textLoop", 3) 
+
+; ~replace("str1", "str2") or ~replace('str1', 'str2') or ~replace(`str1`, `str2`)
+Hotstring("s)~replace\(([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])\)", "TextFunctions.hotReplacer", 3)
+
+; ~translate("str1", "str2", "str3")
+Hotstring("s)~translate\((?(?=.*,.*,.*)([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``])|(?=.*,.*)([""|'|``].*[""|'|``]),(?:\s+)?([""|'|``].*[""|'|``]))\)", "TextFunctions.translateText", 3) 
 
 class Utilities {
 	SelectAll_Copy() {
@@ -63,7 +68,6 @@ class TextFunctions {
 		}
 		
 		translationRequestData := GoogleTranslate(Utilities.StripQuotes(textToTranslate), Utilities.StripQuotes(fromLanguage), Utilities.StripQuotes(toLanguage))
-				
 		if (translationRequestData.2 == "Success")
 			Utilities.Paste(translationRequestData.1)
 	}
@@ -79,7 +83,7 @@ class TextFunctions {
 			MatchedData.keys.Push(_matchedVars["name"])
 			MatchedData.vars[_matchedVars["name"]] := [_matchedVars["value"]]
 		}
-		
+				
 		; unwrap variables
 		for variableName, contentArr in MatchedData.vars {
 			if (InStr(contentArr.1, "$")) {
@@ -89,6 +93,7 @@ class TextFunctions {
 						arrValues := StrSplit(RegExReplace(MatchedData.vars[keyName].1, "\[([\S\s]*?)\]", "$1"), ",")
 						if (arrValues.Length() == 1) {
 							newContent := StrReplace(newContent, keyName, Trim(arrValues.1))
+							MatchedData.vars[variableName, 1] := newContent
 						} else {
 							for arrIndex, arrValue in arrValues {
 								MatchedData.vars[variableName, arrIndex] := StrReplace(newContent, keyName, Trim(arrValue))

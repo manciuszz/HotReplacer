@@ -64,7 +64,7 @@ Note: It should work with multi-line strings too!
 
 # How it works
 
-It uses enhanced [AHK Hotstrings](https://github.com/menixator/hotstring) to allow REGEX and Functions/Labels operations with hotstrings), [Clip()](https://github.com/berban/Clip) in an attempt to have more reliable clipboard operations and [AutoHotInterception](https://github.com/evilC/AutoHotInterception) libraries, to keep track of what the user is typing on a DRIVER LEVEL, because using [Hotkey API](https://www.autohotkey.com/docs/commands/Hotkey.htm) doesn't seem to work on all applications, such as *Opera Browser*.
+It uses enhanced [AHK Hotstrings](https://github.com/menixator/hotstring) to allow REGEX and Functions/Labels operations with hotstrings), [Clip()](https://github.com/berban/Clip) in an attempt to have more reliable clipboard operations, [Translate.ahk](https://www.autohotkey.com/boards/viewtopic.php?f=6&t=63835&p=293119&hilit=translate.ahk#p293119) to take advantage of Google Translate service and [AutoHotInterception](https://github.com/evilC/AutoHotInterception) libraries, to keep track of what the user is typing on a DRIVER LEVEL, because using [Hotkey API](https://www.autohotkey.com/docs/commands/Hotkey.htm) doesn't seem to work on all applications, such as *Opera Browser*.
 
 # Why not just use built-in editor replacer feature?
 
