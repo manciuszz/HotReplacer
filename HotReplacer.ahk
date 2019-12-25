@@ -110,11 +110,9 @@ class TextFunctions {
 		templateVar := params.2
 
 		templateLength := MatchedData.vars[templateVar].Length()
-		if (loopCount > templateLength)
-			loopCount := templateLength
 
 		Loop % loopCount {
-			newText .= MatchedData.vars[templateVar, A_Index] . "`n"
+			newText .= MatchedData.vars[templateVar, 1 + Mod(A_Index, templateLength)] . "`n"
 		}
 		
 		Utilities.Paste(newText)
