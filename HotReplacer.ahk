@@ -31,7 +31,7 @@ Hotstring("sS)~loop\((\d+),(?:\s+)?(.*)\)", "TextFunctions.textLoop", 3)
 Hotstring("sSU)~replace\(([""|'|``].*[""|'|``]),(?:\s+)?((?1))\)", "TextFunctions.hotReplacer", 3)
 
 ; ~translate("str1", "str2", "str3")
-Hotstring("sSU)~translate\((?(?=.*,.*,.*)([""|'|``].*[""|'|``]),(?:\s+)?((?1)),(?:\s+)?((?1))|(?=.*,.*)((?1)),(?:\s+)?((?1)))\)", "TextFunctions.translateText", 3) 
+Hotstring("sSU)~translate\(([""|'|``].*[""|'|``]),(?:\s+)?((?1))(?:,(?:\s+)?((?1)))?\)", "TextFunctions.translateText", 3) 
 
 class Utilities {
 	SelectAll_Copy() {
@@ -103,13 +103,12 @@ class Utilities {
 class TextFunctions {
 	translateText(params) {
 		textToTranslate := params.1
-		fromLanguage := params.2
-		toLanguage := params.3
-	
-		if (params.4 && params.5) {
-			textToTranslate := params.4
+		if (params.3) {
+			fromLanguage := params.2
+			toLanguage := params.3
+		} else {
 			fromLanguage := "auto"
-			toLanguage := params.5
+			toLanguage := params.2
 		}
 		
 		translationRequestData := GoogleTranslate(Utilities.StripQuotes(textToTranslate), Utilities.StripQuotes(fromLanguage), Utilities.StripQuotes(toLanguage))
