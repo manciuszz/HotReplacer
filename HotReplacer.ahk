@@ -87,8 +87,8 @@ class Utilities {
 				} else { 
 					newContent := StrReplace(newContent, keyName, Trim(MatchedData.vars[keyName].1))
 					MatchedData.vars[variableName, 1] := newContent
-					
-					if (variableName == keyName)
+										
+					if (variableName == keyName || InStr(newContent, keyName))
 						newContent := StrReplace(newContent, keyName, "")
 						
 					if (InStr(newContent, "$")) {
@@ -126,16 +126,22 @@ class TextFunctions {
 		while(MatchedData._currentPos := RegExMatch(template, "O)(?<name>\$+\w+)(?:\s+)?\=(?:\s+)?``(?<value>[\S\s]*?)``", _matchedVars, MatchedData._currentPos + StrLen(_matchedVars[0]))) {
 			MatchedData.keys.Push(_matchedVars["name"])
 			MatchedData.vars[_matchedVars["name"]] := [_matchedVars["value"]]
-			MatchedData.counts[_matchedVars["name"]] := Utilities.CountSubstring(_matchedVars["value"], "\$+\w+")
+			; MatchedData.counts[_matchedVars["name"]] := Utilities.CountSubstring(_matchedVars["value"], "\$+\w+")
 		}
 		
 		; sort variables by variable count in ascending order
-		sortedVars := Utilities.Sort(MatchedData.counts)
+		; sortedVars := Utilities.Sort(MatchedData.counts)
+		; for index, sortedVar in sortedVars {
+			; variableName := sortedVar.key
+			; variableValue := MatchedData.vars[variableName].1
+			; if (InStr(variableValue, "$")) {
+				; Utilities.Unwrap(variableName, variableValue, MatchedData)
+			; }
+		; }
 		
 		; unwrap variables
-		for index, sortedVar in sortedVars {
-			variableName := sortedVar.key
-			variableValue := MatchedData.vars[variableName].1
+		for variableName, contentArr in MatchedData.vars {
+			variableValue := contentArr.1
 			if (InStr(variableValue, "$")) {
 				Utilities.Unwrap(variableName, variableValue, MatchedData)
 			}
@@ -149,7 +155,7 @@ class TextFunctions {
 		templateLength := MatchedData.vars[templateVar].Length()
 
 		Loop % loopCount {
-			newText .= MatchedData.vars[templateVar, 1 + Mod(A_Index, templateLength)] . "`n"
+			newText .= MatchedData.vars[templateVar, 1 + Mod(A_Index - 1, templateLength)] . "`n"
 		}
 		
 		Utilities.Paste(newText)
