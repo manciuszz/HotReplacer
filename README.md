@@ -38,19 +38,24 @@ Notice that in order to use REGEX you have to encase your query in back-tic's li
 
 ### Loop text function example:
 ```hcl
-$port = `8080`
+$port2 = `8080`
+$port = `$port2`
 $type = `tcp`
-$my_ips = `[0.0.0.0/0, 1.0.0.1/0]`
-$template = `### tuple ### allow $type $port 0.0.0.0/0 any $my_ips
--A ufw-user-input -p $type --dport $port -j ACCEPT`
+$importantIP = `1.0.0.1/0`
+$my_ips = `[0.0.0.0/0, $importantIP]`
+$my_ports = `[$port, 9090]`
+$template = `### tuple ### allow $type $my_ports 0.0.0.0/0 any $my_ips
+-A ufw-user-input -p $type --dport $my_ports -j ACCEPT`
 
-~loop(2, $template)
+~loop(3, $template)
 ```
 would result in
 ```hcl
 ### tuple ### allow tcp 8080 0.0.0.0/0 any 0.0.0.0/0
 -A ufw-user-input -p tcp --dport 8080 -j ACCEPT
-### tuple ### allow tcp 8080 0.0.0.0/0 any 1.0.0.1/0
+### tuple ### allow tcp 9090 0.0.0.0/0 any 1.0.0.1/0
+-A ufw-user-input -p tcp --dport 9090 -j ACCEPT
+### tuple ### allow tcp 8080 0.0.0.0/0 any 0.0.0.0/0
 -A ufw-user-input -p tcp --dport 8080 -j ACCEPT
 ```
 
@@ -72,5 +77,5 @@ Recently, I needed to edit a file where I had this template where one or two pla
 
 # TODO / Future IDEAS
 
-- Optimize REGEX queries...
 - Implement variable recognition to translate text function
+- 'Eval' text function that would evaluate AHK code dynamically to bring more power to the table?

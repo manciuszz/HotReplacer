@@ -17,7 +17,7 @@ SetBatchLines,-1
 
 #Include <Clip>
 #Include <Translate>
-; #Include <Debugging/JSON>
+#Include <Debugging/JSON>
 #Include <HotstringsInterception>
 
 ; Utilities.Run_AsAdmin()
@@ -30,7 +30,7 @@ Hotstring("sS)~loop\((\d+),(?:\s+)?(.*)\)", "TextFunctions.textLoop", 3)
 ; ~replace("str1", "str2") or ~replace('str1', 'str2') or ~replace(`str1`, `str2`)
 Hotstring("sSU)~replace\(([""|'|``].*[""|'|``]),(?:\s+)?((?1))\)", "TextFunctions.hotReplacer", 3)
 
-; ~translate("str1", "str2", "str3")
+; ~translate("str1", "str2", "str3") or ~translate("str1", "str2")
 Hotstring("sSU)~translate\(([""|'|``].*[""|'|``]),(?:\s+)?((?1))(?:,(?:\s+)?((?1)))?\)", "TextFunctions.translateText", 3) 
 
 class Utilities {
@@ -54,48 +54,35 @@ class Utilities {
 		}
 	}
 	
-	CountSubstring(haystack, regexQuery) {
-	   RegExReplace(haystack, regexQuery, "", replacementCount)
-	   return replacementCount
-	}
-	
-	Sort(arr, ascendingOrder := true) {
-		for index, obj in arr
-			out .= arr[index] "+" index "|"
-		v := arr[index]
-		if v is number 
-			type := " N "
-		StringTrimRight, out, out, 1
-		Sort, out, % "D| " type  (!ascendingOrder ? " R" : " ")
-		aStorage := []
-		loop, parse, out, |
-		{
-			key := SubStr(A_LoopField, InStr(A_LoopField, "+") + 1)
-		    aStorage.Push({ key: key, value: arr[key] })
-		}
-		return aStorage
-	}
-	
-	Unwrap(variableName, byRef newContent, byRef MatchedData) {
+	Unwrap(variableName, byRef newContent, byRef MatchedData, isRecursing := false) {
 		for keyIndex, keyName in MatchedData.keys {
 			if (InStr(newContent, keyName)) {
 				arrValues := StrSplit(RegExReplace(MatchedData.vars[keyName].1, "\[([\S\s]*?)\]", "$1"), ",")
 				if (arrValues.Length() > 1) {
 					for arrIndex, arrValue in arrValues {
-						MatchedData.vars[variableName, arrIndex] := StrReplace(newContent, keyName, Trim(arrValue))
+						if (isRecursing) {
+							MatchedData.vars[variableName, arrIndex] := StrReplace(MatchedData.vars[variableName, arrIndex], keyName, Trim(arrValue))
+						} else {
+							MatchedData.vars[variableName, arrIndex] := StrReplace(newContent, keyName, Trim(arrValue))
+						}
 					}
 				} else { 
 					newContent := StrReplace(newContent, keyName, Trim(MatchedData.vars[keyName].1))
 					MatchedData.vars[variableName, 1] := newContent
 										
-					if (variableName == keyName || InStr(newContent, keyName))
+					if (variableName == keyName || RegExMatch(newContent, StrReplace(keyName, "$", "\$") . "\b")) {
 						newContent := StrReplace(newContent, keyName, "")
+					}
 						
 					if (InStr(newContent, "$")) {
 						this.Unwrap(variableName, newContent, MatchedData)
 					}
 				}
 			}
+		}
+		
+		if (!isRecursing && InStr(newContent, "$")) {
+			this.Unwrap(variableName, newContent, MatchedData, true)
 		}
 	}
 }
@@ -122,22 +109,11 @@ class TextFunctions {
 		template := clipboard
 		
 		; fetch all available variables from clipboard
-		MatchedData := { keys: [], vars: {}, counts: {}, _currentPos: 1 }
+		MatchedData := { keys: [], vars: {}, _currentPos: 1 }
 		while(MatchedData._currentPos := RegExMatch(template, "O)(?<name>\$+\w+)(?:\s+)?\=(?:\s+)?``(?<value>[\S\s]*?)``", _matchedVars, MatchedData._currentPos + StrLen(_matchedVars[0]))) {
 			MatchedData.keys.Push(_matchedVars["name"])
 			MatchedData.vars[_matchedVars["name"]] := [_matchedVars["value"]]
-			; MatchedData.counts[_matchedVars["name"]] := Utilities.CountSubstring(_matchedVars["value"], "\$+\w+")
 		}
-		
-		; sort variables by variable count in ascending order
-		; sortedVars := Utilities.Sort(MatchedData.counts)
-		; for index, sortedVar in sortedVars {
-			; variableName := sortedVar.key
-			; variableValue := MatchedData.vars[variableName].1
-			; if (InStr(variableValue, "$")) {
-				; Utilities.Unwrap(variableName, variableValue, MatchedData)
-			; }
-		; }
 		
 		; unwrap variables
 		for variableName, contentArr in MatchedData.vars {
