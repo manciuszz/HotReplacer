@@ -4,7 +4,7 @@ A proof of concept script which allows to execute custom functions (i.e. replaci
 
 # Preview - Tested on AutoHotkey v1.1.28.00
 
-![Preview](https://giant.gfycat.com/VainAbandonedHornshark.gif)
+[![Preview](https://thumbs.gfycat.com/VainAbandonedHornshark-size_restricted.gif)](https://giant.gfycat.com/VainAbandonedHornshark.mp4)
 
 # Usage
 
